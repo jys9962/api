@@ -2,11 +2,13 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
+const processEnv: Record<string, string | undefined> = process.env;
+
 export const env = {
   mysql: {
-    host: process.env.MYSQL_HOST,
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
+    host: processEnv.MYSQL_HOST!,
+    username: processEnv.MYSQL_USER!,
+    password: processEnv.MYSQL_PASSWORD!,
+    database: processEnv.MYSQL_DATABASE!,
   },
 };

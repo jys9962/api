@@ -5,6 +5,7 @@ import { GlobalMysqlModule } from '@/global/mysql/global-mysql.module';
 import { MemberModule } from '@/feature/member/member.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RedisModule } from '@/global/redis/redis.module';
+import { IdGeneratorModule } from '@/common/id-generator/id-generator.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { RedisModule } from '@/global/redis/redis.module';
     GlobalMysqlModule,
     RedisModule.forRoot(),
     MemberModule,
+    IdGeneratorModule,
   ],
   controllers: [AppController],
   providers: [AppService],
