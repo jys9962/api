@@ -14,8 +14,9 @@ export class NodeIdGetter {
     const key = 'nodeId';
     const nodeId = await this.redis.incr(key) - 1;
 
-    if (nodeId >= this.maxNodeId) {
-      await this.redis.decrby(key, this.maxNodeId);
+    if (nodeId % (this.maxNodeId + 1) === 0) {
+      const overflow = nodeId - (this.maxNodeId + 1)
+      await this.redis.decrby(key, overflow);
     }
     return nodeId % (this.maxNodeId + 1);
   }
