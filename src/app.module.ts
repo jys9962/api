@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { GlobalMysqlModule } from '@/global/mysql/global-mysql.module';
 import { MemberModule } from '@/feature/member/member.module';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -15,7 +13,7 @@ import { IdGeneratorModule } from '@/common/id-generator/id-generator.module';
     MemberModule,
     IdGeneratorModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

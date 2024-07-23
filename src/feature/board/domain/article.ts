@@ -1,13 +1,14 @@
 export class Article {
 
   constructor(
-    public readonly id: bigint,
+    public id: bigint,
     public title: string,
     public content: string,
-    public readonly createdAt: Date,
+    public createdAt: Date,
   ) {}
 
   static create() {
+
   }
 
 

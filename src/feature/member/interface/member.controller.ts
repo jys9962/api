@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { MemberService } from '../application/member.service';
 import { SignUpDto } from '../application/dto/sign-up.dto';
@@ -12,6 +12,16 @@ export class MemberController {
     private readonly memberService: MemberService,
   ) {}
 
+  @Get()
+  @ApiOperation({
+    summary: '로그인 회원 정보',
+  })
+  async getUserInfo() {
+    return {
+      isLoggedIn: false,
+    };
+  }
+
   @Post('sign-in')
   @ApiOperation({
     summary: '로그인',
@@ -20,7 +30,6 @@ export class MemberController {
     @Body() dto: SignInDto,
   ) {
     await this.memberService.signIn(dto);
-
   }
 
   @Post('sign-up')

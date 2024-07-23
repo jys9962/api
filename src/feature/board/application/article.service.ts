@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
+import { IArticleRepository } from '@/feature/board/domain/repository/i.article.repository';
+import { Article } from '@/feature/board/domain/article';
 
 @Injectable()
 export class ArticleService {
 
-  constructor() {}
+  constructor(
+    private readonly articleRepository: IArticleRepository,
+  ) {}
 
-
-  write() {
-    
+  writeArticle() {
+    const article = Article.create()
   }
 
 }

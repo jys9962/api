@@ -3,7 +3,7 @@ import { IMemberRepository } from '@/feature/member/domain/repository/i.member.r
 import { MemberId } from '@/feature/member/domain/value-object/member-id';
 import { Member } from '@/feature/member/domain/member';
 import { InjectOrm } from '@/libs/mysql/decorator/inject-orm.decorator';
-import { MembersEntity } from '@/global/mysql/entities/members.entity';
+import { MemberEntity } from '@/global/mysql/entities/member.entity';
 import { IOrm } from '@/libs/mysql/interface/i.orm';
 import { MemberMapper } from '@/feature/member/infrastructor/repository/mapper/member.mapper';
 
@@ -11,8 +11,8 @@ import { MemberMapper } from '@/feature/member/infrastructor/repository/mapper/m
 export class MysqlMemberRepository implements IMemberRepository {
 
   constructor(
-    @InjectOrm(MembersEntity)
-    private readonly memberOrm: IOrm<MembersEntity>,
+    @InjectOrm(MemberEntity)
+    private readonly memberOrm: IOrm<MemberEntity>,
   ) {}
 
   async exists(id: MemberId): Promise<boolean> {

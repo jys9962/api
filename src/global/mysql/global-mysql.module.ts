@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MembersEntity } from '@/global/mysql/entities/members.entity';
+import { MemberEntity } from '@/global/mysql/entities/member.entity';
 import { MysqlModule } from '@/libs/mysql/mysql.module';
 import { env } from '@/global/env';
 
 const defaultEntities = [
-  MembersEntity,
+  MemberEntity,
 ];
 
 @Module({

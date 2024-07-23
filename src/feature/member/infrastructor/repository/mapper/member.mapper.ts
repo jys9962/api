@@ -1,5 +1,5 @@
 import { Member } from '@/feature/member/domain/member';
-import { MembersEntity } from '@/global/mysql/entities/members.entity';
+import { MemberEntity } from '@/global/mysql/entities/member.entity';
 import { MemberId } from '@/feature/member/domain/value-object/member-id';
 import { MemberName } from '@/feature/member/domain/value-object/member-name';
 import { Email } from '@/common/value-object/email';
@@ -7,8 +7,8 @@ import { MemberPassword } from '@/feature/member/domain/value-object/member-pass
 
 export class MemberMapper {
 
-  static toPersistence(member: Member): MembersEntity {
-    return new MembersEntity({
+  static toPersistence(member: Member): MemberEntity {
+    return new MemberEntity({
       id: member.id.toString(),
       createdAt: member.createdAt,
       name: member.name,
@@ -17,7 +17,7 @@ export class MemberMapper {
     });
   }
 
-  static toDomain(entity: MembersEntity): Member {
+  static toDomain(entity: MemberEntity): Member {
     return new Member(
       MemberId.from(entity.id),
       Email.from(entity.email),

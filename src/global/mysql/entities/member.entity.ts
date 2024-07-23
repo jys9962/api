@@ -1,7 +1,7 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'members' })
-export class MembersEntity {
+export class MemberEntity {
   @PrimaryColumn({ type: 'bigint', unsigned: true })
   id!: string;
 
@@ -17,7 +17,7 @@ export class MembersEntity {
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
-  constructor(props: MembersEntity) {
+  constructor(props: MemberEntity) {
     Object.assign(this, props);
   }
 }
