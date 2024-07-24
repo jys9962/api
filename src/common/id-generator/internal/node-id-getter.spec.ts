@@ -1,11 +1,10 @@
 import Redis from 'ioredis';
-import { NodeIdGetter } from './node-id-getter';
+import { NodeIdGetter } from '@/common/id-generator/internal/node-id-getter';
 
 describe('NodeIdGetter', () => {
   let redis: Redis;
 
   beforeAll(async () => {
-    // 실제 Redis 서버와 연결
     redis = new Redis({
       host: 'localhost',
       port: 6379,

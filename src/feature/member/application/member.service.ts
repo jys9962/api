@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { IMemberRepository } from '../domain/repository/i.member.repository';
 import { Member } from '../domain/member';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -24,12 +24,12 @@ export class MemberService {
   ) {
     const member = await this.memberRepository.findByEmail(dto.email);
     if (!member) {
-      throw Error();
+      throw new BadRequestException();
     }
 
-    const isMatchPassword = member.isMatchPassword(dto.password);
+    const isMatchPassword = await member.isMatchPassword(dto.password);
     if (!isMatchPassword) {
-      throw Error();
+      throw new BadRequestException();
     }
 
     this.eventBus.publish(

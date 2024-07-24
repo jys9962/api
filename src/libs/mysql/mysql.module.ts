@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { getDataSourceName, TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
@@ -19,21 +19,6 @@ export class MysqlModule {
   ): DynamicModule {
     return {
       module: MysqlModule,
-      providers: entities.map(
-        (entity) => ({
-          provide: MysqlUtil.getName(name, entity),
-          useFactory: (
-            dataSource: DataSource,
-          ) => {
-            const repository = dataSource.getRepository(entity);
-            return extendTypeOrm(repository);
-          },
-          inject: [DataSource],
-        }),
-      ),
-      exports: entities.map(
-        (entity) => MysqlUtil.getName(name, entity),
-      ),
       imports: [
         TypeOrmModule.forRootAsync({
           useFactory() {
@@ -45,8 +30,9 @@ export class MysqlModule {
               username: connectionOption.username,
               password: connectionOption.password,
               database: connectionOption.database,
+              entities: entities,
               synchronize: false,
-              logging: 'all',
+              logging: false,
               logger: 'advanced-console',
               namingStrategy: new SnakeNamingStrategy(),
             };
@@ -60,8 +46,26 @@ export class MysqlModule {
           },
         }),
       ],
+      providers: [
+        ...entities.map(
+          (entity) => ({
+            provide: MysqlUtil.getName(name, entity),
+            useFactory: (
+              dataSource: DataSource,
+            ) => {
+              const repository = dataSource.getRepository(entity);
+              return extendTypeOrm(repository);
+            },
+            inject: [DataSource],
+          }),
+        ),
+      ],
+      exports: [
+        ...entities.map(
+          (entity) => MysqlUtil.getName(name, entity),
+        ),
+      ],
     };
-
   }
 
 }
