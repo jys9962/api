@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { GlobalMysqlModule } from '@/global/mysql/global-mysql.module';
+import { MysqlModule } from '@/global/mysql/mysql.module';
 import { MemberModule } from '@/feature/member/member.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RedisModule } from '@/global/redis/redis.module';
@@ -10,7 +10,7 @@ import { JsonInterceptor } from '@/common/interceptor/json.interceptor';
 @Module({
   imports: [
     CqrsModule.forRoot(),
-    GlobalMysqlModule,
+    MysqlModule,
     RedisModule.forRoot(),
     MemberModule,
     IdGeneratorModule,

@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '@/app.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { JsonInterceptor } from '@/common/interceptor/json.interceptor';
-import { MysqlModule } from '@/libs/mysql/mysql.module';
+import { MysqlModule } from '@/global/mysql/mysql.module';
 
 jest.mock('typeorm-transactional', () => ({
   Transactional: () => () => {},
@@ -13,7 +13,7 @@ export const createModule = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [
       AppModule,
-      MysqlModule
+      MysqlModule,
     ],
     providers: [
       {
@@ -23,5 +23,5 @@ export const createModule = async () => {
     ],
   }).compile();
 
-  return moduleFixture
+  return moduleFixture;
 };

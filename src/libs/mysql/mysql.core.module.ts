@@ -10,7 +10,7 @@ import { extendTypeOrm } from '@/libs/mysql/extend/orm-extend';
 type MysqlOption = Pick<MysqlConnectionCredentialsOptions, 'host' | 'username' | 'password' | 'database'>;
 
 @Module({})
-export class MysqlModule {
+export class MysqlCoreModule {
 
   static forRoot(
     name: string,
@@ -18,7 +18,7 @@ export class MysqlModule {
     entities: Function[],
   ): DynamicModule {
     return {
-      module: MysqlModule,
+      module: MysqlCoreModule,
       imports: [
         TypeOrmModule.forRootAsync({
           useFactory() {
