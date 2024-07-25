@@ -1,4 +1,4 @@
-import { BrandString } from '@/common/type/brand-string';
+import { BrandString } from '@/common/type/brand-type';
 
 export type MemberName = BrandString<'MemberName'>;
 

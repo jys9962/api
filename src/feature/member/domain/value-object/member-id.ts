@@ -1,4 +1,4 @@
-import { BrandBigInt } from '@/common/type/brand-bigint';
+import { BrandBigInt } from '@/common/type/brand-type';
 import { IdGenerator } from '@/common/id-generator/id-generator';
 
 export type MemberId = BrandBigInt<'MemberId'>;
