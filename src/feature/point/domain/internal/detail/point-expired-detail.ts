@@ -17,6 +17,12 @@ export class PointExpiredDetail implements PointDetail {
     return null;
   }
 
+  get transactionId() {
+    return undefined
+  };
+
+
+
   get signedAmount(): number {
     return -this.amount;
   }

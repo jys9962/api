@@ -9,7 +9,8 @@ export interface PointDetail {
   log: PointLog;
 
   addedDetail: PointAddedDetail;
-  usedDetail: PointUsedDetail | null;
+  // usedDetail: PointUsedDetail | null;
 
+  transactionId: bigint | undefined
   signedAmount: number;
 }

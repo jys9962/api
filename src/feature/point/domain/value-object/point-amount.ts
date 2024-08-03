@@ -1,6 +1,4 @@
-import { BrandNumber } from '@/common/type/brand-type';
-
-export type PointAmount = BrandNumber<'PointAmount'>
+export type PointAmount = number & { _brand: 'PointAmount' }
 
 export namespace PointAmount {
   export const of = (

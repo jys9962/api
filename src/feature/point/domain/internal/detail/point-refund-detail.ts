@@ -12,24 +12,26 @@ export class PointRefundDetail implements PointDetail {
     readonly amount: PointAmount,
     readonly log: PointLog,
     readonly addedDetail: PointAddedDetail,
-    readonly usedDetail: PointUsedDetail,
   ) {}
 
   get signedAmount() {
     return this.amount;
   }
 
+  get transactionId() {
+    return this.log.transactionId;
+  }
+
   static create(
     amount: PointAmount,
     log: PointLog,
-    useDetail: PointUsedDetail,
+    addedDetail: PointAddedDetail,
   ) {
     return new PointRefundDetail(
       IdGenerator.nextId(),
       amount,
       log,
-      useDetail.addedDetail,
-      useDetail,
+      addedDetail,
     );
   }
 }

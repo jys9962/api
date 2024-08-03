@@ -74,4 +74,92 @@ describe('MemberPoint', () => {
     expect(memberPoint.current).toBe(4000);
   });
 
+  it('포인트 사용은 유효기간이 짧은순으로 사용됨', async function() {
+    const memberPoint = MemberPoint
+      .create(
+        new Date(2000, 0, 1),
+      )
+      .add(
+        PointAmount.of(1000),
+        new Date(2000, 6, 1),
+      )
+      .add(
+        PointAmount.of(2000),
+        new Date(2000, 0, 1),
+      )
+      .add(
+        PointAmount.of(3000),
+        new Date(2000, 3, 1),
+      )
+      .use(
+        PointAmount.of(500),
+        1n,
+      )
+      .setCurrentDate(
+        new Date(2000, 1, 1),
+      )
+    ;
+
+    expect(memberPoint.current).toBe(4000);
+  });
+
+  it('포인트 사용 취소 후 유효기간이 복구됨', async function() {
+    const memberPoint = MemberPoint
+      .create(new Date(2000, 0, 1))
+      .add(
+        PointAmount.of(1000),
+        new Date(2000, 6, 1),
+      )
+      .add(
+        PointAmount.of(2000),
+        new Date(2000, 3, 1),
+      )
+      .add(
+        PointAmount.of(3000),
+        new Date(2000, 5, 1),
+      )
+      .use(
+        PointAmount.of(4000),
+        1n,
+      )
+      .refund(
+        PointAmount.of(4000),
+        1n,
+      )
+      .setCurrentDate(
+        new Date(2000, 4, 1),
+      );
+
+    expect(memberPoint.current).toBe(4000);
+  });
+
+  it('포인트 환불 후 유효기간이 긴 순으로 복구됨', async function() {
+    const memberPoint = MemberPoint
+      .create(new Date(2000, 0, 1))
+      .add(
+        PointAmount.of(1000),
+        new Date(2000, 6, 1),
+      )
+      .add(
+        PointAmount.of(2000),
+        new Date(2000, 3, 1),
+      )
+      .add(
+        PointAmount.of(3000),
+        new Date(2000, 5, 1),
+      )
+      .use(
+        PointAmount.of(4000),
+        1n,
+      )
+      .refund(
+        PointAmount.of(3500),
+        1n,
+      )
+      .setCurrentDate(
+        new Date(2000, 4, 1),
+      );
+
+    expect(memberPoint.current).toBe(4000)
+  });
 });

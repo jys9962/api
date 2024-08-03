@@ -24,7 +24,7 @@ export class PointAddedDetail implements PointDetail {
   }
 
   get transactionId() {
-    return null;
+    return undefined
   }
 
   static create(

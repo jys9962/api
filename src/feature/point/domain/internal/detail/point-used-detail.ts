@@ -17,6 +17,10 @@ export class PointUsedDetail implements PointDetail {
     return -this.amount;
   }
 
+  get transactionId() {
+    return this.log.transactionId;
+  }
+
   get usedDetail() {
     return this;
   }

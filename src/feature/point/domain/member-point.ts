@@ -31,6 +31,10 @@ export class MemberPoint {
   }
 
   setCurrentDate(date: Date) {
+    if (this.currentDate.getTime() > date.getTime()) {
+      throw new Error();
+    }
+
     this.currentDate = date;
 
     this.syncExpired();
@@ -173,59 +177,64 @@ export class MemberPoint {
   }
 
   private createRefundList(
-    log: PointLog
+    log: PointLog,
   ) {
-    const groupByTransactionId = MapUtil.groupBy(
-      this.detailList,
-      t => t.usedDetail?.log.transactionId?.toString() || '',
-    );
+    const result: PointRefundDetail[] = [];
     let needAmount: number = log.amount;
-
-    return Object
-      .entries(groupByTransactionId)
+    const sameUsedList = this
+      .detailList
       .filter(
-        ([transactionId, list]) => {
-          if (transactionId !== log.transactionId?.toString()) {
-            return false;
-          }
-          const usedBalance = list.reduce((
-            acc,
-            t,
-          ) => acc + t.signedAmount, 0);
-          if (usedBalance === 0) {
-            return false;
-          }
+        t => t.transactionId === log.transactionId,
+      )
+    ;
+    const groupingList = MapUtil.groupBy(
+      sameUsedList,
+      t => t.addedDetail.id.toString(),
+    );
 
-          return true;
-        },
+    Object
+      .entries(groupingList)
+      .filter(
+        ([t, list]) => list.reduce((
+          sum,
+          t,
+        ) => sum + t.signedAmount, 0) !== 0,
       )
       .sort(
         (
           t1,
           t2,
         ) => {
-          const expirationAt1 = t1[1][0].usedDetail!.addedDetail.log.expirationAt!.getTime();
-          const expirationAt2 = t2[1][0].usedDetail!.addedDetail.log.expirationAt!.getTime();
-          return expirationAt2 - expirationAt1;
+          return t2[1][0].addedDetail.log.expirationAt!.getTime() - t1[1][0].addedDetail.log.expirationAt!.getTime();
         },
       )
-      .map(([transactionId, list]) => {
-        const usedBalance = Math.abs(
-          list.reduce((
-            acc,
-            t,
-          ) => acc + t.signedAmount, 0),
-        );
+      .forEach(
+        (t1) => {
+          if (needAmount === 0) {
+            return;
+          }
+          const balance = Math.abs(
+            t1[1].reduce((
+              sum,
+              t,
+            ) => sum + t.signedAmount, 0),
+          );
 
-        const refund = Math.min(needAmount, usedBalance);
-        needAmount -= refund;
+          const refund = Math.min(needAmount, balance);
+          needAmount -= refund;
+          result.push(
+            PointRefundDetail.create(
+              PointAmount.of(refund),
+              log,
+              t1[1][0].addedDetail!,
+            ),
+          );
+        },
+      )
+    ;
 
-        return PointRefundDetail.create(
-          PointAmount.of(refund),
-          log,
-          list[0].usedDetail!,
-        );
-      });
+    return result
+
   }
 
   private syncExpired() {
