@@ -6,6 +6,7 @@ import { DataSource } from 'typeorm';
 import { MysqlConnectionCredentialsOptions } from 'typeorm/driver/mysql/MysqlConnectionCredentialsOptions';
 import { MysqlUtil } from '@/libs/mysql/util/mysql.util';
 import { extendTypeOrm } from '@/libs/mysql/extend/orm-extend';
+import { env } from '@/global/env';
 
 type MysqlOption = Pick<MysqlConnectionCredentialsOptions, 'host' | 'username' | 'password' | 'database'>;
 
@@ -31,7 +32,7 @@ export class MysqlCoreModule {
               password: connectionOption.password,
               database: connectionOption.database,
               entities: entities,
-              synchronize: false,
+              synchronize: env.mode === 'test',
               logging: false,
               logger: 'advanced-console',
               namingStrategy: new SnakeNamingStrategy(),

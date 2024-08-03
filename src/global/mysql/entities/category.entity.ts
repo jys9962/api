@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity('categories')
+@Index('idx_categories_board_id')
 export class CategoryEntity {
   @PrimaryColumn({ type: 'bigint', unsigned: true })
   id!: number;

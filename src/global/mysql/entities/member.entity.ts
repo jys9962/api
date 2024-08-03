@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 
 @Entity({ name: 'members' })
+@Index('idx_members_email', { unique: true })
 export class MemberEntity {
   @PrimaryColumn({ type: 'bigint', unsigned: true })
   id!: string;
