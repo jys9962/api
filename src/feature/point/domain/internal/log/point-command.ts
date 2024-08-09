@@ -2,7 +2,8 @@ import { PointAmount } from '@/feature/point/domain/value-object/point-amount';
 import { PointType } from '@/feature/point/domain/interface/point-type';
 import { IdGenerator } from '@/common/id-generator/id-generator';
 
-export class PointLog {
+export class PointCommand {
+  public isNew = false;
 
   constructor(
     readonly id: bigint,
@@ -19,8 +20,10 @@ export class PointLog {
       : this.amount;
   }
 
-  static create(param: Pick<PointLog, 'amount' | 'type' | 'transactionId' | 'expirationAt'>) {
-    return new PointLog(
+  static create(
+    param: Pick<PointCommand, 'amount' | 'type' | 'transactionId' | 'expirationAt'>,
+  ) {
+    const log = new PointCommand(
       IdGenerator.nextId(),
       param.amount,
       param.type,
@@ -28,5 +31,7 @@ export class PointLog {
       param.transactionId,
       param.expirationAt,
     );
+    log.isNew = true;
+    return log;
   }
 }

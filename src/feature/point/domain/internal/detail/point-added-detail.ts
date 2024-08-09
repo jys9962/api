@@ -1,6 +1,6 @@
 import { PointDetail } from '@/feature/point/domain/internal/detail/point-detail';
 import { PointAmount } from '@/feature/point/domain/value-object/point-amount';
-import { PointLog } from '@/feature/point/domain/internal/log/point-log';
+import { PointCommand } from '@/feature/point/domain/internal/log/point-command';
 import { IdGenerator } from '@/common/id-generator/id-generator';
 
 export class PointAddedDetail implements PointDetail {
@@ -8,7 +8,7 @@ export class PointAddedDetail implements PointDetail {
   constructor(
     readonly id: bigint,
     readonly amount: PointAmount,
-    readonly log: PointLog,
+    readonly expirationAt: Date,
   ) {}
 
   get signedAmount(): number {
@@ -28,12 +28,12 @@ export class PointAddedDetail implements PointDetail {
   }
 
   static create(
-    log: PointLog,
+    log: PointCommand,
   ) {
     return new PointAddedDetail(
       IdGenerator.nextId(),
       log.amount,
-      log,
+      log.expirationAt!,
     );
   }
 }

@@ -10,7 +10,7 @@ describe('MemberPoint', () => {
     const memberPoint = MemberPoint.create();
 
     // 최초생성시 0원
-    expect(memberPoint.current).toBe(0);
+    expect(memberPoint.balance).toBe(0);
   });
 
   it('포인트 지급시 잔액 증가', async function() {
@@ -21,7 +21,7 @@ describe('MemberPoint', () => {
         new Date(2100, 0, 1),
       );
 
-    expect(memberPoint.current).toBe(1000);
+    expect(memberPoint.balance).toBe(1000);
   });
 
   it('포인트 사용시 잔액 차감', async function() {
@@ -36,7 +36,7 @@ describe('MemberPoint', () => {
         1n,
       );
 
-    expect(memberPoint.current).toBe(4000);
+    expect(memberPoint.balance).toBe(4000);
   });
 
   it('사용기한이 지나는 경우', async function() {
@@ -52,7 +52,7 @@ describe('MemberPoint', () => {
         new Date(2020, 1, 1),
       );
 
-    expect(memberPoint.current).toBe(0);
+    expect(memberPoint.balance).toBe(0);
   });
 
   it('사용 후 취소', async function() {
@@ -71,7 +71,7 @@ describe('MemberPoint', () => {
         100n,
       );
 
-    expect(memberPoint.current).toBe(4000);
+    expect(memberPoint.balance).toBe(4000);
   });
 
   it('포인트 사용은 유효기간이 짧은순으로 사용됨', async function() {
@@ -100,7 +100,7 @@ describe('MemberPoint', () => {
       )
     ;
 
-    expect(memberPoint.current).toBe(4000);
+    expect(memberPoint.balance).toBe(4000);
   });
 
   it('포인트 사용 취소 후 유효기간이 복구됨', async function() {
@@ -130,7 +130,7 @@ describe('MemberPoint', () => {
         new Date(2000, 4, 1),
       );
 
-    expect(memberPoint.current).toBe(4000);
+    expect(memberPoint.balance).toBe(4000);
   });
 
   it('포인트 환불 후 유효기간이 긴 순으로 복구됨', async function() {
@@ -160,6 +160,6 @@ describe('MemberPoint', () => {
         new Date(2000, 4, 1),
       );
 
-    expect(memberPoint.current).toBe(4000)
+    expect(memberPoint.balance).toBe(4000)
   });
 });

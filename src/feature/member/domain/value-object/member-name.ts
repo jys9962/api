@@ -1,6 +1,4 @@
-import { BrandString } from '@/common/type/brand-type';
-
-export type MemberName = BrandString<'MemberName'>;
+export type MemberName = string & { _brand: 'MemberName' }
 
 export namespace MemberName {
 

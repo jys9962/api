@@ -11,6 +11,7 @@ export const env = {
     password: processEnv.MYSQL_PASSWORD!,
     database: processEnv.MYSQL_DATABASE!,
   },
+  isTest: processEnv.NODE_ENV === 'test',
   mode: processEnv.NODE_ENV,
 
 };

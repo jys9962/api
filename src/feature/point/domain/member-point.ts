@@ -1,6 +1,6 @@
 import { PointAmount } from '@/feature/point/domain/value-object/point-amount';
 import { MapUtil } from '@/common/util/map/map.util';
-import { PointLog } from '@/feature/point/domain/internal/log/point-log';
+import { PointCommand } from '@/feature/point/domain/internal/log/point-command';
 import { PointDetail } from '@/feature/point/domain/internal/detail/point-detail';
 import { PointAddedDetail } from '@/feature/point/domain/internal/detail/point-added-detail';
 import { PointUsedDetail } from '@/feature/point/domain/internal/detail/point-used-detail';
@@ -9,7 +9,7 @@ import { PointRefundDetail } from '@/feature/point/domain/internal/detail/point-
 
 export class MemberPoint {
 
-  readonly logList: PointLog[] = [];
+  readonly commandList: PointCommand[] = [];
   readonly detailList: PointDetail[] = [];
 
   constructor(
@@ -20,14 +20,16 @@ export class MemberPoint {
     return new MemberPoint(currentDate);
   }
 
-  get current(): number {
-    return this.logList.reduce(
+  get balance(): PointAmount {
+    const amount = this.detailList.reduce(
       (
         acc,
         t,
       ) => acc + t.signedAmount,
       0,
     );
+
+    return PointAmount.of(amount);
   }
 
   setCurrentDate(date: Date) {
@@ -38,7 +40,28 @@ export class MemberPoint {
     this.currentDate = date;
 
     this.syncExpired();
+    return this;
+  }
 
+  execute(command: PointCommand) {
+    let details: PointDetail[];
+    switch (command.type) {
+      case 'add':
+        details = [PointAddedDetail.create(command)];
+        break;
+      case 'use':
+        details = this.createUsedList(command);
+        break;
+      case 'refund':
+        details = this.createRefundList(command);
+        break;
+      default:
+    }
+
+    this.commandList.push(command);
+    this.detailList.push(...details!);
+
+    this.setCurrentDate(command.createdAt);
     return this;
   }
 
@@ -51,17 +74,13 @@ export class MemberPoint {
     amount: PointAmount,
     expirationAt: Date,
   ) {
-    const log = PointLog.create({
-      expirationAt: expirationAt,
+    const command = PointCommand.create({
       type: 'add',
+      expirationAt: expirationAt,
       amount: amount,
     });
-    const detail = PointAddedDetail.create(log);
 
-    this.logList.push(log);
-    this.detailList.push(detail);
-
-    return this;
+    return this.execute(command);
   }
 
   /**
@@ -73,17 +92,12 @@ export class MemberPoint {
     amount: PointAmount,
     transactionId: bigint,
   ) {
-    const log = PointLog.create({
+    const command = PointCommand.create({
       type: 'use',
       transactionId: transactionId,
       amount: amount,
     });
-    const detailList = this.createUsedList(log);
-
-    this.logList.push(log);
-    this.detailList.push(...detailList);
-
-    return this;
+    return this.execute(command);
   }
 
   /**
@@ -95,25 +109,21 @@ export class MemberPoint {
     amount: PointAmount,
     transactionId: bigint,
   ) {
-    const log = PointLog.create({
+    const command = PointCommand.create({
       type: 'refund',
       amount: amount,
       transactionId: transactionId,
     });
 
-    const refundDetails = this.createRefundList(log);
-
-    this.logList.push(log);
-    this.detailList.push(...refundDetails);
-
-    return this;
+    return this.execute(command);
   }
 
   private createUsedList(
-    log: PointLog,
+    log: PointCommand,
   ) {
     const addedGroups = MapUtil.groupBy(
-      this.detailList, t => t.addedDetail.id.toString(),
+      this.detailList,
+      t => t.addedDetail.id.toString(),
     );
     let needAmount: number = log.amount;
 
@@ -137,9 +147,10 @@ export class MemberPoint {
           [addedId1, groups1],
           [addedId2, groups2],
         ) => {
-          const expiration1 = groups1[0].addedDetail.log.expirationAt!.getTime();
-          const expiration2 = groups2[0].addedDetail.log.expirationAt!.getTime();
+          const expiration1 = groups1[0].addedDetail.expirationAt!.getTime();
+          const expiration2 = groups2[0].addedDetail.expirationAt!.getTime();
 
+          // 유효기간이 짧은 포인트를 먼저 사용
           return expiration1 - expiration2;
         },
       )
@@ -164,7 +175,7 @@ export class MemberPoint {
 
           acc.push(
             PointUsedDetail.create(
-              log,
+              log.transactionId!,
               group[0].addedDetail,
               PointAmount.of(useAmount),
             ),
@@ -177,7 +188,7 @@ export class MemberPoint {
   }
 
   private createRefundList(
-    log: PointLog,
+    log: PointCommand,
   ) {
     const result: PointRefundDetail[] = [];
     let needAmount: number = log.amount;
@@ -205,7 +216,7 @@ export class MemberPoint {
           t1,
           t2,
         ) => {
-          return t2[1][0].addedDetail.log.expirationAt!.getTime() - t1[1][0].addedDetail.log.expirationAt!.getTime();
+          return t2[1][0].addedDetail.expirationAt!.getTime() - t1[1][0].addedDetail.expirationAt!.getTime();
         },
       )
       .forEach(
@@ -225,7 +236,7 @@ export class MemberPoint {
           result.push(
             PointRefundDetail.create(
               PointAmount.of(refund),
-              log,
+              log.transactionId!,
               t1[1][0].addedDetail!,
             ),
           );
@@ -233,7 +244,7 @@ export class MemberPoint {
       )
     ;
 
-    return result
+    return result;
 
   }
 
@@ -242,7 +253,7 @@ export class MemberPoint {
     const expiredTarget = Object
       .entries(logGroup)
       .filter(([logId, detailList]) => {
-        const expirationAt = detailList[0].addedDetail.log.expirationAt!.getTime();
+        const expirationAt = detailList[0].addedDetail.expirationAt!.getTime();
         const currentTime = this.currentDate.getTime();
 
         if (expirationAt > currentTime) {
@@ -270,21 +281,14 @@ export class MemberPoint {
           0,
         );
 
-        const log = PointLog.create({
-          type: 'expired',
-          amount: PointAmount.of(balance),
-        });
-
         const detail = PointExpiredDetail.create(
-          log,
           PointAmount.of(balance),
           detailList[0].addedDetail,
         );
-
-        this.logList.push(log);
         this.detailList.push(detail);
       },
     );
   }
+
 }
 

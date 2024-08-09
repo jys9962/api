@@ -1,1 +1,1 @@
-export type PointType = 'use' | 'add' | 'refund' | 'expired'
+export type PointType = 'use' | 'add' | 'refund'

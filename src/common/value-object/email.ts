@@ -1,6 +1,4 @@
-import { BrandString } from '@/common/type/brand-type';
-
-export type Email = BrandString<'Email'>;
+export type Email = string & { _brand: 'Email ' }
 
 export namespace Email {
 
