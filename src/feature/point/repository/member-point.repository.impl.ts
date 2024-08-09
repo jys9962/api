@@ -1,10 +1,8 @@
 import { MemberPointRepository } from '@/feature/point/domain/member-point.repository';
 import { MemberPoint } from '@/feature/point/domain/member-point';
 import { DynamoDBDocumentClient, QueryCommand, TransactWriteCommand } from '@aws-sdk/lib-dynamodb';
-import { DynamoUtil } from '@/libs/dynamodb/util/dynamo-util';
-import { PointLogEntity } from '@/feature/point/repository/entity/point-log.entity';
-import { PointLogMapper } from '@/feature/point/repository/mapper/point-log.mapper';
-import { MemberPointEntity } from '@/feature/point/repository/entity/member-point.entity';
+import { IPointCommandEntity, PointCommandEntity } from '@/feature/point/repository/entity/point-command.entity';
+import { PointCommandMapper } from '@/feature/point/repository/mapper/point-command.mapper';
 import { BigIntMath } from '@/common/util/bigint/big-math';
 import { MemberPointMapper } from '@/feature/point/repository/mapper/member-point.mapper';
 import { Injectable } from '@nestjs/common';
@@ -13,60 +11,60 @@ import { Injectable } from '@nestjs/common';
 export class MemberPointRepositoryImpl implements MemberPointRepository {
 
   constructor(
-    private readonly dynamoClient: DynamoDBDocumentClient,
+    private readonly dynamoClient: DynamoDBDocumentClient
   ) {}
 
   async find(
-    memberId: bigint,
+    memberId: bigint
   ): Promise<MemberPoint> {
     const { Items } = await this.dynamoClient.send(
       new QueryCommand({
         TableName: 'api',
         KeyConditionExpression: 'pk = :pk',
         ExpressionAttributeValues: {
-          ':pk': DynamoUtil.createKey(PointLogEntity.pk, {
-            memberId: memberId.toString(),
-          }),
+          ':pk': PointCommandEntity.key('pk', {
+            memberId: memberId.toString()
+          })
         },
         ConsistentRead: true
-      }),
+      })
     );
 
     if (!Items || Items.length === 0) {
       return MemberPoint.create();
     }
 
-    const logList = Items as PointLogEntity[];
+    const logList = Items as IPointCommandEntity[];
 
     return logList
       .sort(
         (
           t1,
-          t2,
-        ) => t1.createdAt - t2.createdAt,
+          t2
+        ) => t1.createdAt - t2.createdAt
       )
       .reduce(
         (
           memberPoint,
-          log,
+          log
         ) => {
-          const pointLog = PointLogMapper.toDomain(log);
+          const pointLog = PointCommandMapper.toDomain(log);
 
           return memberPoint.execute(pointLog);
         },
-        MemberPoint.create(new Date(0)),
+        MemberPoint.create(new Date(0))
       );
   }
 
   async save(
     memberId: bigint,
-    memberPoint: MemberPoint,
+    memberPoint: MemberPoint
   ): Promise<void> {
     const newLogEntityList = memberPoint
       .commandList
       .filter(t => t.isNew)
       .map(
-        t => PointLogMapper.toPersistence(memberId, t),
+        t => PointCommandMapper.toPersistence(memberId, t)
       );
 
     if (newLogEntityList.length === 0) {
@@ -78,7 +76,7 @@ export class MemberPointRepositoryImpl implements MemberPointRepository {
       ...memberPoint
         .commandList
         .filter(t => !t.isNew)
-        .map(t => t.id),
+        .map(t => t.id)
     );
 
     await this.dynamoClient.send(
@@ -93,20 +91,20 @@ export class MemberPointRepositoryImpl implements MemberPointRepository {
                 lastLogId = :lastIdValue
               `,
               ExpressionAttributeValues: {
-                ':lastIdValue': lastLogId.toString(),
-              },
-            },
+                ':lastIdValue': lastLogId.toString()
+              }
+            }
           },
           ...newLogEntityList.map(
             t => ({
               Put: {
                 TableName: 'api',
-                Item: t,
-              },
-            }),
-          ),
-        ],
-      }),
+                Item: t
+              }
+            })
+          )
+        ]
+      })
     );
   }
 

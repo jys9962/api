@@ -1,11 +1,12 @@
 import { Module, OnModuleInit } from '@nestjs/common';
 import { DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
-import { DynamoDb } from '@/global/dynamodb/table/create-table.command';
+import { CreateTableCommand, DynamoDBClient, ListTablesCommand } from '@aws-sdk/client-dynamodb';
+import { MyDynamo } from '@/global/dynamodb/table/create-table.command';
 
 @Module({
   providers: [
     {
+      // todo core module 분리
       provide: DynamoDBDocumentClient,
       useFactory: () =>
         DynamoDBDocumentClient.from(
@@ -51,7 +52,7 @@ export class DynamodbModule implements OnModuleInit {
     }
 
     await this.client.send(
-      DynamoDb.getCreateCommand(),
+      new CreateTableCommand(MyDynamo.tableSchema)
     );
   }
 

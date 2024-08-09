@@ -4,19 +4,16 @@ import { MemberPointRepositoryImpl } from '@/feature/point/repository/member-poi
 import { PointController } from '@/feature/point/controller/point.controller';
 import { PointService } from '@/feature/point/service/point.service';
 
-/*
-  참조 https://techblog.woowahan.com/2587/
- */
 @Module({
   controllers: [
-    PointController,
+    PointController
   ],
   providers: [
     PointService,
     {
       provide: MemberPointRepository,
-      useClass: MemberPointRepositoryImpl,
-    },
-  ],
+      useClass: MemberPointRepositoryImpl
+    }
+  ]
 })
 export class PointModule {}

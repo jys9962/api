@@ -4,8 +4,9 @@ import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { MemberPointRepository } from '@/feature/point/domain/member-point.repository';
 import { PointService } from '@/feature/point/service/point.service';
 import { MemberPointRepositoryImpl } from '@/feature/point/repository/member-point.repository.impl';
-import { Timestamp } from '@/common/type/timestamp';
-import { DynamoDb } from '@/global/dynamodb/table/create-table.command';
+import { Timestamp } from '@/common/value-object/timestamp/timestamp';
+import { DynamoTest } from '../../fixture/dynamo.fixture';
+import { IdGenerator } from '@/common/id-generator/id-generator';
 
 describe('PointService (Integration)', function() {
   let service: PointService;
@@ -18,32 +19,38 @@ describe('PointService (Integration)', function() {
           PointService,
           {
             provide: MemberPointRepository,
-            useClass: MemberPointRepositoryImpl,
+            useClass: MemberPointRepositoryImpl
           },
           {
             provide: DynamoDBDocumentClient,
             useFactory: () => DynamoDBDocumentClient.from(
               new DynamoDBClient({
                 endpoint: 'http://localhost:8000',
-                region: Date.now().toString(),
+                region: IdGenerator.uuid(),
                 credentials: {
                   accessKeyId: 'd1ncg',
-                  secretAccessKey: 'wfr6bm',
-                },
-              }),
-            ),
-          },
-        ],
+                  secretAccessKey: 'wfr6bm'
+                }
+              })
+            )
+          }
+        ]
       })
       .compile();
 
     service = module.get<PointService>(PointService);
     dynamoClient = module.get<DynamoDBDocumentClient>(DynamoDBDocumentClient);
-
-    await createTable(dynamoClient);
   });
 
-  it('should add and get points for a member', async () => {
+  beforeEach(async function() {
+    await DynamoTest.createTable(dynamoClient);
+  });
+
+  afterEach(async () => {
+    await DynamoTest.deleteTable(dynamoClient);
+  });
+
+  it('포인트 지급', async function() {
     const memberId = 123n;
     const amount = 1000;
     const expirationAt = new Date(Date.now() + Timestamp.day());
@@ -54,7 +61,7 @@ describe('PointService (Integration)', function() {
     expect(balance).toBe(amount);
   });
 
-  it('should use points for a member', async () => {
+  it('포인트 사용', async function() {
     const memberId = 1234n;
     const initialAmount = 200;
     const useAmount = 50;
@@ -67,7 +74,7 @@ describe('PointService (Integration)', function() {
     expect(balance).toBe(150);
   });
 
-  it('should refund points for a member', async () => {
+  it('포인트 환불', async function() {
     const memberId = 12345n;
     const initialAmount = 300;
     const useAmount = 100;
@@ -82,9 +89,3 @@ describe('PointService (Integration)', function() {
     expect(balance).toBe(250);
   });
 });
-
-async function createTable(client: DynamoDBDocumentClient) {
-  return client.send(
-    DynamoDb.getCreateCommand(),
-  );
-}

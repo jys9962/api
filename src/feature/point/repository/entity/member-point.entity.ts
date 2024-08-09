@@ -1,17 +1,14 @@
-import { Dynamo } from '@/libs/dynamodb/type/dynamo.type';
+import { DynamoEntityBuilder } from '@/libs/dynamodb/model/dynamo-entity-builder';
 
-export interface MemberPointEntity {
-  pk: Dynamo.Key<MemberPointEntity.pk>;
-  sk: Dynamo.Key<MemberPointEntity.sk>;
+export const MemberPointEntity = DynamoEntityBuilder
+  .create({
+    pk: 'memberPoint#{memberId}',
+    sk: '#'
+  })
+  .with<{
+    lastLogId: string;
+    balance: number;
+  }>()
+  .build();
 
-  lastLogId: string;
-  balance: number;
-}
-
-export namespace MemberPointEntity {
-  export const pk = 'memberPoint#{memberId}';
-  export const sk = '#';
-
-  export type pk = typeof pk
-  export type sk = typeof sk
-}
+export type IMemberPointEntity = DynamoEntityBuilder.Type<typeof MemberPointEntity>

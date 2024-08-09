@@ -1,6 +1,6 @@
 import { PointAmount } from '@/feature/point/domain/value-object/point-amount';
 import { MapUtil } from '@/common/util/map/map.util';
-import { PointCommand } from '@/feature/point/domain/internal/log/point-command';
+import { PointCommand } from '@/feature/point/domain/internal/command/point-command';
 import { PointDetail } from '@/feature/point/domain/internal/detail/point-detail';
 import { PointAddedDetail } from '@/feature/point/domain/internal/detail/point-added-detail';
 import { PointUsedDetail } from '@/feature/point/domain/internal/detail/point-used-detail';

@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { createModule } from '../../fixture/create-module';
+import { moduleFixture } from '../../fixture/module.fixture';
 import * as request from 'supertest';
 import { MemberEntity } from '@/global/mysql/entities/member.entity';
 import { MemberPassword } from '@/feature/member/domain/value-object/member-password';
@@ -11,7 +11,7 @@ describe('MemberController', () => {
   let memberRepository: IOrm<MemberEntity>;
 
   beforeAll(async () => {
-    const moduleFixture = await createModule();
+    const moduleFixture = await moduleFixture();
     app = moduleFixture.createNestApplication();
     await app.init();
 

@@ -1,4 +1,4 @@
-import { Dynamo, FormatObject } from '@/libs/dynamodb/type/dynamo.type';
+import { Dynamo, FormatObject } from '@/libs/dynamodb/interface/dynamo-entity.interface';
 
 export namespace DynamoUtil {
 

@@ -2,7 +2,7 @@ import { Member } from '@/feature/member/domain/member';
 import { MemberEntity } from '@/global/mysql/entities/member.entity';
 import { MemberId } from '@/feature/member/domain/value-object/member-id';
 import { MemberName } from '@/feature/member/domain/value-object/member-name';
-import { Email } from '@/common/value-object/email';
+import { Email } from '@/common/value-object/email/email';
 import { MemberPassword } from '@/feature/member/domain/value-object/member-password';
 
 export class MemberMapper {
