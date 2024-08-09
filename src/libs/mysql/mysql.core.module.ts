@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { getDataSourceName, TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 import { addTransactionalDataSource } from 'typeorm-transactional';
 import { DataSource } from 'typeorm';
@@ -42,8 +42,12 @@ export class MysqlCoreModule {
             if (!options) {
               throw new Error('Invalid options passed');
             }
-
-            return addTransactionalDataSource(new DataSource(options));
+            const dataSource = new DataSource(options);
+            await dataSource.initialize();
+            return addTransactionalDataSource({
+              name: name,
+              dataSource: dataSource,
+            });
           },
         }),
       ],

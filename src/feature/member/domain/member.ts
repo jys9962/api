@@ -1,4 +1,4 @@
-import { Email } from '@/common/value-object/email';
+import { Email } from '@/common/value-object/email/email';
 import { MemberPassword } from '@/feature/member/domain/value-object/member-password';
 import { MemberName } from '@/feature/member/domain/value-object/member-name';
 import { MemberId } from '@/feature/member/domain/value-object/member-id';

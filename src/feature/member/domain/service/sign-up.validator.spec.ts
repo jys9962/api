@@ -3,7 +3,7 @@ import { IMemberRepository } from '@/feature/member/domain/repository/i.member.r
 import { Member } from '@/feature/member/domain/member';
 import { SignUpValidator } from '@/feature/member/domain/service/sign-up.validator';
 import { MemberId } from '@/feature/member/domain/value-object/member-id';
-import { Email } from '@/common/value-object/email';
+import { Email } from '@/common/value-object/email/email';
 import { MemberName } from '@/feature/member/domain/value-object/member-name';
 import { MemberPassword } from '@/feature/member/domain/value-object/member-password';
 

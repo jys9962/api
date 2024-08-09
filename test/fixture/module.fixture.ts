@@ -9,7 +9,7 @@ jest.mock('typeorm-transactional', () => ({
   addTransactionalDataSource: (t: any) => t,
 }));
 
-export const createModule = async () => {
+export const moduleFixture = async () => {
   const moduleFixture: TestingModule = await Test.createTestingModule({
     imports: [
       AppModule,
